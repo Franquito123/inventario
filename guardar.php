@@ -9,8 +9,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $nombre = trim($_POST['nombre'] ?? '');
 $cantidad = $_POST['cantidad'] ?? '';
+$unidad_medida = trim($_POST['unidad_medida'] ?? '');
 
-if ($nombre === '' || $cantidad === '') {
+if ($nombre === '' || $cantidad === '' || $unidad_medida === '') {
     header('Location: index.php?estado=incompleto');
     exit;
 }
@@ -27,20 +28,27 @@ if (!is_numeric($cantidad)) {
 
 $cantidadInt = (int) $cantidad;
 
-// Validar que la cantidad sea estrictamente mayor a 0
 if ($cantidadInt <= 0) {
     header('Location: index.php?estado=cantidad_invalida');
     exit;
 }
 
+// Valida  la unidad de medida 
+$unidades_permitidas = ['Pieza', 'Caja', 'Paquete'];
+if (!in_array($unidad_medida, $unidades_permitidas, true)) {
+    header('Location: index.php?estado=unidad_invalida');
+    exit;
+}
+
 $sentencia = $conexion->prepare(
-    'INSERT INTO productos (nombre, cantidad)
-     VALUES (:nombre, :cantidad)'
+    'INSERT INTO productos (nombre, cantidad, unidad_medida)
+     VALUES (:nombre, :cantidad, :unidad_medida)'
 );
 
 $sentencia->execute([
     'nombre' => $nombre,
-    'cantidad' => $cantidadInt
+    'cantidad' => $cantidadInt,
+    'unidad_medida' => $unidad_medida
 ]);
 
 header('Location: index.php?estado=guardado');

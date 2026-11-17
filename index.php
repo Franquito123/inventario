@@ -7,6 +7,7 @@ $consulta = $conexion->query(
         id,
         nombre,
         cantidad,
+        unidad_medida,
         fecharegistro
     FROM productos
     ORDER BY id asc'
@@ -50,7 +51,7 @@ $estado = $_GET['estado'] ?? '';
             <h2>Registrar producto</h2>
 
             <p class="descripcion">
-                Escriba el nombre del producto y su cantidad.
+                Escriba el nombre, la cantidad y seleccione la unidad de medida.
             </p>
 
             <?php if ($estado === 'guardado'): ?>
@@ -74,6 +75,12 @@ $estado = $_GET['estado'] ?? '';
             <?php if ($estado === 'cantidad_invalida'): ?>
                 <div class="mensaje error">
                     La cantidad debe ser un número entero mayor a 0.
+                </div>
+            <?php endif; ?>
+
+            <?php if ($estado === 'unidad_invalida'): ?>
+                <div class="mensaje error">
+                    La unidad de medida debe ser estrictamente Pieza, Caja o Paquete.
                 </div>
             <?php endif; ?>
 
@@ -109,6 +116,24 @@ $estado = $_GET['estado'] ?? '';
                     >
                 </div>
 
+                <!-- Campo nuevo unidd de medida -->
+                <div class="campo">
+                    <label for="unidad_medida">
+                        Unidad de medida
+                    </label>
+
+                    <select
+                        id="unidad_medida"
+                        name="unidad_medida"
+                        required
+                    >
+                        <option value="">Seleccione una opción</option>
+                        <option value="Pieza">Pieza</option>
+                        <option value="Caja">Caja</option>
+                        <option value="Paquete">Paquete</option>
+                    </select>
+                </div>
+
                 <button type="submit">
                     Registrar producto
                 </button>
@@ -133,6 +158,7 @@ $estado = $_GET['estado'] ?? '';
                             <th>ID</th>
                             <th>Producto</th>
                             <th>Cantidad</th>
+                            <th>Unidad</th>
                             <th>Estado</th>
                             <th>Fecha</th>
                         </tr>
@@ -141,7 +167,7 @@ $estado = $_GET['estado'] ?? '';
                     <tbody>
                         <?php if (count($productos) === 0): ?>
                             <tr>
-                                <td colspan="5" class="sin-registros">
+                                <td colspan="6" class="sin-registros">
                                     No hay productos registrados.
                                 </td>
                             </tr>
@@ -163,6 +189,10 @@ $estado = $_GET['estado'] ?? '';
 
                                 <td>
                                     <?php echo $producto['cantidad']; ?>
+                                </td>
+
+                                <td>
+                                    <?php echo htmlspecialchars($producto['unidad_medida']); ?>
                                 </td>
 
                                 <td>
